@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survivors Backend Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e1e; color: #fff; padding: 20px; }
+        #log { background: #000; padding: 10px; height: 300px; overflow-y: auto; font-family: monospace; }
+        button { padding: 10px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Survivors Backend Tester</h1>
+    <p>Status: <span id="status" style="color: red;">Disconnected</span></p>
+    
+    <button id="joinBtn">Join Room</button>
+    <button id="moveBtn">Send Movement Input (dx:1, dy:1)</button>
+
+    <h3>Server Logs:</h3>
+    <div id="log"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const logEl = document.getElementById('log');
+        const statusEl = document.getElementById('status');
+        let mySessionId = null;
+
+        function log(msg) {
+            logEl.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${msg}</div>`;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        socket.on('connect', () => {
+            statusEl.innerText = 'Connected';
+            statusEl.style.color = 'lightgreen';
+            log(`Connected to server with Socket ID: ${socket.id}`);
+        });
+
+        socket.on('disconnect', () => {
+            statusEl.innerText = 'Disconnected';
+            statusEl.style.color = 'red';
+            log('Disconnected from server');
+        });
+
+        socket.on('room_joined', (data) => {
+            log(`Successfully joined room: ${data.roomId}`);
+            log(`My Player ID: ${data.playerId}, Session ID: ${data.sessionId}`);
+            mySessionId = data.sessionId;
+        });
+
+        socket.on('state_update', (data) => {
+            // Uncomment the line below if you want to see the spam of state updates
+            // log(`State Update (Tick ${data.tick}): ${data.players.length} players, ${data.mobs.length} mobs`);
+            
+            // Just update the visual counter somewhere or log every 60 ticks to not freeze the browser
+            if(data.tick % 60 === 0) {
+                log(`[Tick ${data.tick}] Active Players: ${data.players.length} | Active Mobs: ${data.mobs.length}`);
+            }
+        });
+
+        socket.on('error', (err) => {
+            log(`<span style="color:red">Error: ${err.message}</span>`);
+        });
+
+        document.getElementById('joinBtn').addEventListener('click', () => {
+            log('Requesting to join room...');
+            socket.emit('join_room', { username: 'TestPlayer_' + Math.floor(Math.random() * 100) });
+        });
+
+        document.getElementById('moveBtn').addEventListener('click', () => {
+            log('Sending movement input...');
+            socket.emit('player_input', { seq: 1, dx: 1, dy: 1, action: false });
+        });
+    </script>
+</body>
+</html>

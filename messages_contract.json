@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Brotato Multiplayer Messages Contract",
+  "description": "WebSocket messages between Client and Server",
+  "c2s": {
+    "join_room": {
+      "properties": { "username": { "type": "string" }, "roomId": { "type": "string" } },
+      "required": ["username"]
+    },
+    "reconnect_session": {
+      "properties": { "sessionId": { "type": "string" } },
+      "required": ["sessionId"]
+    },
+    "player_input": {
+      "properties": {
+        "seq":    { "type": "integer" },
+        "dx":     { "type": "number", "minimum": -1, "maximum": 1 },
+        "dy":     { "type": "number", "minimum": -1, "maximum": 1 },
+        "action": { "type": "boolean" }
+      },
+      "required": ["seq", "dx", "dy"]
+    }
+  },
+  "s2c": {
+    "room_joined": {
+      "properties": {
+        "roomId": { "type": "string" }, "sessionId": { "type": "string" },
+        "playerId": { "type": "string" }, "state": { "type": "object" }
+      },
+      "required": ["roomId", "sessionId", "playerId", "state"]
+    },
+    "state_update": {
+      "description": "Full state snapshot at 20 ticks/sec",
+      "properties": {
+        "tick":       { "type": "integer" },
+        "phase":      { "type": "string", "enum": ["grace", "wave", "game_over"] },
+        "wave":       { "type": "integer" },
+        "graceTimer": { "type": "integer", "description": "Seconds remaining in grace period" },
+        "players": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "id": { "type": "string" }, "username": { "type": "string" },
+              "x": { "type": "number" }, "y": { "type": "number" },
+              "hp": { "type": "integer" }, "maxHp": { "type": "integer" },
+              "level": { "type": "integer" },
+              "xp": { "type": "integer" }, "xpToNext": { "type": "integer" },
+              "kills": { "type": "integer" }, "connected": { "type": "boolean" }
+            }
+          }
+        },
+        "mobs": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "id": { "type": "string" },
+              "x": { "type": "number" }, "y": { "type": "number" },
+              "hp": { "type": "integer" }, "maxHp": { "type": "integer" },
+              "type": { "type": "integer" }
+            }
+          }
+        },
+        "projectiles": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "id": { "type": "string" },
+              "x": { "type": "number" }, "y": { "type": "number" },
+              "ownerId": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["tick", "phase", "wave", "players", "mobs", "projectiles"]
+    },
+    "wave_start": {
+      "properties": { "wave": { "type": "integer" }, "count": { "type": "integer" } },
+      "required": ["wave", "count"]
+    },
+    "player_left": {
+      "properties": { "playerId": { "type": "string" } },
+      "required": ["playerId"]
+    },
+    "game_over": {
+      "properties": {
+        "wave": { "type": "integer" },
+        "scores": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "playerId": { "type": "string" }, "username": { "type": "string" },
+              "wave": { "type": "integer" }, "kills": { "type": "integer" },
+              "level": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "required": ["wave", "scores"]
+    },
+    "error": {
+      "properties": { "message": { "type": "string" }, "code": { "type": "integer" } },
+      "required": ["message"]
+    }
+  }
+}
