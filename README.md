@@ -112,6 +112,9 @@ redis-cli ping   # should print: PONG
 ## Local Setup
 
 ### 1. Clone / Download the project
+**Backend:** https://github.com/Sai-Ganesh-Darni/massive-survivors-backend
+
+**Frontend:** https://github.com/Sai-Ganesh-Darni/massive-survivors-frontend
 
 ```bash
 # If using Git:
