@@ -342,8 +342,3 @@ Make sure each player is using a **separate browser window** or **Incognito tab*
 2. Confirm the frontend `SERVER_URL` in `network.js` matches (`http://localhost:3000`)
 3. Check browser console for CORS or WebSocket errors
 
----
-
-## License
-
-MIT
