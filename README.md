@@ -266,6 +266,19 @@ Covers:
 
 ---
 
+## Backend Architecture Assessment
+
+> 📄 **[View Backend Architecture Assessment (PDF Submission) →](./backend_assessment.md)**
+
+Provides a professional summary of the backend system:
+- System Overview & Execution Flow (Ticker-based server, decoupled physics & network loops)
+- Scalability Strategy (Horizontal scaling, Redis pub/sub messaging)
+- Maximum Player Limit Rationale ($O(P \times M)$ collision CPU limits vs network constraints)
+- Reliability & Recovery (Client reconnection & 5s server state restoration)
+- Future Scope (Spatial Grid, Protobuf, UDP/WebRTC, Kubernetes Agones)
+
+---
+
 ## Environment Variables
 
 | Variable | Default | Description |
